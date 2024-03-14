@@ -10,7 +10,10 @@ const contactsSlice = createSlice({
       state.contactList.push(action.payload);
     },
     remove: (state, action) => {
-      state.contactList = action.payload;
+      const index = state.contactList.findIndex(
+        contact => contact.id === action.payload
+      );
+      state.contactList.splice(index, 1);
     },
   },
 });

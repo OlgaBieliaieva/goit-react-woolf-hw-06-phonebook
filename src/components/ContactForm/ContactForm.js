@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
+import { add, getContacts } from 'redux/contactsSlice';
 import css from './ContactForm.module.css';
 
-export default function ContactForm({ addContact }) {
+export default function ContactForm() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -23,8 +28,25 @@ export default function ContactForm({ addContact }) {
 
   const handleSubmit = e => {
     e.preventDefault(e);
-    addContact(name, number);
+    createContact(name, number);
     reset();
+  };
+
+  const createContact = (name, number) => {
+    const newContact = {
+      id: nanoid(),
+      name: name,
+      number: number,
+    };
+    const isExist = contacts.find(
+      contact => contact.name.trim().toLowerCase() === name.trim().toLowerCase()
+    );
+
+    if (isExist) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+    dispatch(add(newContact));
   };
 
   const reset = () => {

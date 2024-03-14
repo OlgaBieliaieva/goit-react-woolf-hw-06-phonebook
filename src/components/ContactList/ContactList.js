@@ -1,26 +1,44 @@
+import { useSelector, useDispatch } from 'react-redux';
+import { remove, getContacts } from 'redux/contactsSlice';
+import { getFilterQuery } from 'redux/filterSlice';
 import css from './ContactList.module.css';
 
-const ContactList = ({ contacts, onDeleteContact }) => {
-  const filteredContacts = contacts();
+const ContactList = () => {
+  const contacts = useSelector(getContacts);
+  const filterQuery = useSelector(getFilterQuery);
+  const dispatch = useDispatch();
 
-  return (
+  const removeContact = id => {
+    dispatch(remove(id));
+  };
+
+  return contacts?.length > 0 ? (
     <ul className={css.contactList}>
-      {filteredContacts?.map(({ id, name, number }) => {
-        return (
-          <li className={css.contactItem} key={id}>
-            {name}: {number}
-            <button
-              className={css.listItemBtn}
-              id={id}
-              type="button"
-              onClick={() => onDeleteContact(id)}
-            >
-              Delete
-            </button>
-          </li>
-        );
-      })}
+      {contacts
+        ?.filter(contact =>
+          contact.name.toLowerCase().includes(filterQuery.toLowerCase())
+        )
+        .map(({ id, name, number }) => {
+          return (
+            <li className={css.contactItem} key={id}>
+              {name}: {number}
+              <button
+                className={css.listItemBtn}
+                id={id}
+                type="button"
+                onClick={() => removeContact(id)}
+              >
+                Delete
+              </button>
+            </li>
+          );
+        })}
     </ul>
+  ) : (
+    <p className={css.contactListDefault}>
+      Sorry, your phonebook is empty. <br></br>
+      Add your first contact, please.
+    </p>
   );
 };
 
